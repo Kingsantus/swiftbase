@@ -7,33 +7,39 @@ import AccountInfoComponent from "../comp/accounts";
 import SendMoneyComponent from "../comp/sendFund";
 import TransactionComponent from "../comp/transactions";
 import { Button } from "@/components/ui/button";
-import { Loader2Icon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
     const router = useRouter();
-    console.log("Session:", session);
-console.log("Status:", status);
 
     useEffect(() => {
         if (status === "unauthenticated") {
-            // router.push("/login"); // Redirect if not logged in
+            router.push("/login"); // Redirect if not logged in
         }
     }, [status, router]);
 
     if (status === "loading") {
-        return <li>
-            <Button size="sm" variant="ghost">
-                <Loader2Icon className="min-w-[8-ch]"></Loader2Icon>
-            </Button>
-        </li>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Button size="sm" variant="ghost" disabled>
+                    <Loader2 className="animate-spin w-6 h-6" />
+                </Button>
+            </div>
+        );
     }
 
-    if (!session?.user) return null; // Prevent rendering if session is missing
+    if (!session?.user) {
+        return (
+            <div className="flex justify-center items-center h-screen text-gray-500">
+                <p>User not found. Please log in.</p>
+            </div>
+        );
+    }
 
     const transactions = [
         { id: '1', description: 'Sent to Alice', amount: 0.1, status: 'pending' },
-        { id: '2', description: 'Received from Bob', amount: 0.5, status: 'receive' },
+        { id: '2', description: 'Received from Bob', amount: 0.5, status: 'received' },
         { id: '3', description: 'Sent to Charlie', amount: 0.2, status: 'pending' },
     ];
 

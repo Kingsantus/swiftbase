@@ -8,23 +8,20 @@ import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogoutButton } from "./Logout-button";
-import { useSession } from "next-auth/react";
-
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
-  const session = useSession();
-
-  const isAuthenticated = !!session; // Determine authentication state
+  const { status } = useSession(); // Properly destructure session
+  const isAuthenticated = status === "authenticated"; // Correct way to check authentication
 
   const handleAuth = () => {
     if (!isAuthenticated) {
       router.push("/signup"); // Redirect to signup if not authenticated
     } else {
-      // Handle logout logic here (e.g., clear authentication state)
-      // You can use the LogoutButton component for this
+      signOut(); // Sign out user if authenticated
     }
   };
 
@@ -47,11 +44,13 @@ export default function Navbar() {
                 About
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Link href="/dashboard" className="hover:underline text-lg">
-                Dashboard
-              </Link>
-            </NavigationMenuItem>
+            {isAuthenticated && (
+              <NavigationMenuItem>
+                <Link href="/dashboard" className="hover:underline text-lg">
+                  Dashboard
+                </Link>
+              </NavigationMenuItem>
+            )}
             <NavigationMenuItem>
               <Link href="/contact" className="hover:underline text-lg">
                 Contact
@@ -65,7 +64,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         <ModeToggle />
         {isAuthenticated ? (
-          <LogoutButton /> // Use LogoutButton when authenticated
+          <LogoutButton />
         ) : (
           <Button className="text-lg" variant="outline" onClick={handleAuth}>
             Sign Up
@@ -87,22 +86,24 @@ export default function Navbar() {
           <NavigationMenu>
             <NavigationMenuList className="flex flex-col gap-4">
               <NavigationMenuItem>
-                <Link href="/" className="hover:underline text-lg">
+                <Link href="/" className="hover:underline text-lg" onClick={() => setIsMenuOpen(false)}>
                   Home
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuLink href="/about" className="hover:underline text-lg">
+                <NavigationMenuLink href="/about" className="hover:underline text-lg" onClick={() => setIsMenuOpen(false)}>
                   About
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              {isAuthenticated && (
+                <NavigationMenuItem>
+                  <NavigationMenuLink href="/dashboard" className="hover:underline text-lg" onClick={() => setIsMenuOpen(false)}>
+                    Dashboard
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              )}
               <NavigationMenuItem>
-                <NavigationMenuLink href="/services" className="hover:underline text-lg">
-                  Services
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink href="/contact" className="hover:underline text-lg">
+                <NavigationMenuLink href="/contact" className="hover:underline text-lg" onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </NavigationMenuLink>
               </NavigationMenuItem>

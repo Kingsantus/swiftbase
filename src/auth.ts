@@ -19,7 +19,7 @@ import argon2 from "argon2";
 
 const nextAuth = NextAuth({
   session: { strategy: "jwt" },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/login"},
   providers: [
     Credentials({

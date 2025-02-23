@@ -54,6 +54,11 @@ export async function signupUserAction(values: unknown): Promise<Res> {
 
         console.log({insertedId: newUser.id})
 
+        // const newWallet = await db.insert(wallets)
+        //     .values({
+        //         userId: newUser.id, wallet, chain, privateKey
+        //     })
+
         
 
         return { success: true };
