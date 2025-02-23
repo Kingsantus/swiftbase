@@ -7,21 +7,24 @@ import { ModeToggle } from "@/components/darkModeOption";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { LogoutButton } from "./Logout-button";
+import { useSession } from "next-auth/react";
 
 
 export default function Navbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
+  const session = useSession();
+
+  const isAuthenticated = !!session; // Determine authentication state
+
   const handleAuth = () => {
     if (!isAuthenticated) {
-      router.push("/signup"); // Redirect to login if not authenticated
+      router.push("/signup"); // Redirect to signup if not authenticated
     } else {
       // Handle logout logic here (e.g., clear authentication state)
-      setIsAuthenticated(false); // Update authentication state
-      // Optionally, you can redirect to the home page or another route after logout
-      // router.push("/");
+      // You can use the LogoutButton component for this
     }
   };
 
@@ -60,12 +63,15 @@ export default function Navbar() {
 
       {/* Right: Mode Toggle & Authentication */}
       <div className="flex items-center gap-4">
-    <ModeToggle />
-    <Button className="text-lg" variant="outline" onClick={handleAuth}>
-      {isAuthenticated ? "Logout" : "Sign Up"}
-    </Button>
-  </div>
-
+        <ModeToggle />
+        {isAuthenticated ? (
+          <LogoutButton /> // Use LogoutButton when authenticated
+        ) : (
+          <Button className="text-lg" variant="outline" onClick={handleAuth}>
+            Sign Up
+          </Button>
+        )}
+      </div>
 
       {/* Mobile Menu Button */}
       <button
