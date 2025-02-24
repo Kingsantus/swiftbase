@@ -5,17 +5,26 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { wallets } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { ethers } from "ethers";
 import { decryptPrivateKey } from "@/app/utility/decryptPrivateKey";
+import { findUserByEmail } from "@/resources/user-queries";
 
 export async function GET() {
     try {
         // Authenticate user
         const session = await auth();
-        const userId = session?.user?.id;
+        console.log(session)
+        const useremail = session?.user?.email;
+
+        if (!useremail) {
+            return NextResponse.json({ success: false, error: "User not authenticated" }, { status: 401 });
+        }
+
+        const userData = await findUserByEmail(useremail);
+
+        const userId = userData?.id;
 
         if (!userId) {
-            return NextResponse.json({ success: false, error: "User not authenticated" }, { status: 401 });
+            return NextResponse.json({ success: false, error: "User ID not found" }, { status: 404 });
         }
 
         // Fetch wallet data
@@ -30,10 +39,6 @@ export async function GET() {
         }
 
         const { dataKey, authTag, wallet } = walletData;
-
-        if (!process.env.API_KEY || !process.env.KEY || !process.env.IV) {
-            return NextResponse.json({ success: false, error: "Missing environment variables" }, { status: 500 });
-        }
 
         // Decrypt the private key
         const privateKey = decryptPrivateKey({ encrypted: dataKey, authTag });

@@ -3,11 +3,11 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import AccountInfoComponent from "../comp/accounts";
 import SendMoneyComponent from "../comp/sendFund";
 import TransactionComponent from "../comp/transactions";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import AccountPage from "../comp/accountInfo";
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -44,22 +44,23 @@ export default function Dashboard() {
     ];
     
 
-    const walletAddress = '0x1234...abcd';
-    const balance = 1.5;
+    // const walletAddress = '0x1234...abcd';
+    // const balance = 1.5;
 
     return (
         <div className="flex justify-center items-center min-h-screen px-4 dark:bg-black dark:text-white">
             <div className="w-full max-w-4xl py-10 lg:py-20">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 gap-4">
-                        <AccountInfoComponent 
-                            walletAddress={walletAddress} 
-                            balance={balance} 
-                            user={{ 
-                                name: session.user?.name ?? 'Unknown User', 
-                                email: session.user?.email ?? 'No email available' 
-                            }} 
-                        />
+                        <AccountPage />
+                        {/* <AccountInfoComponent 
+                            // walletAddress={walletAddress} 
+                            // balance={balance} 
+                            // user={{ 
+                            //     name: session.user?.name ?? 'Unknown User', 
+                            //     email: session.user?.email ?? 'No email available' 
+                            // }} 
+                        /> */}
                         <SendMoneyComponent />
                         <TransactionComponent transactions={transactions} />
                     </div>
