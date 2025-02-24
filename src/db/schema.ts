@@ -51,7 +51,8 @@ export const wallets = pgTable("wallets", {
   userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   wallet: varchar("wallet", { length: 255 }).notNull(),
   chain: varchar("chain", { length: 255 }).notNull(),
-  privateKey: text("private_key").notNull(), // Ensure encryption before storing
+  datakey: text("datakey").notNull(),
+  authTag: text("authTag").notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });

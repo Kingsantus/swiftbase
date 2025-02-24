@@ -4,8 +4,10 @@ import { SignupSchema } from "@/validators/signup-validators";
 import * as v from "valibot";
 import argon2 from "argon2";
 import { db } from "@/db";
-import { lower, users } from "@/db/schema";
+import { users, wallets } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { ethers } from "ethers";
+import { encryptPrivateKey } from "@/app/utility/encryptPrivateKey";
 
 type Res = 
     | { success: true }
@@ -29,7 +31,7 @@ export async function signupUserAction(values: unknown): Promise<Res> {
         const existingUser = await db
             .select({ id: users.id })
             .from(users)
-            .where(eq(lower(users.email), email.toLowerCase()))
+            .where(eq(users.email, email.toLowerCase()))
             .then(res => res[0] ?? null);
 
         if (existingUser?.id) {
@@ -54,11 +56,21 @@ export async function signupUserAction(values: unknown): Promise<Res> {
 
         console.log({insertedId: newUser.id})
 
-        // const newWallet = await db.insert(wallets)
-        //     .values({
-        //         userId: newUser.id, wallet, chain, privateKey
-        //     })
+        const account = ethers.Wallet.createRandom();
+        const wallet = account.address;
+        const privateKey = account.privateKey;
 
+        const { encrypted, authTag } = encryptPrivateKey({ privateKey });
+
+        await db.insert(wallets)
+            .values({
+                userId: newUser.id,
+                wallet,
+                chain: "ETH",
+                datakey: encrypted,
+                authTag
+            })
+            .returning({ id: wallets.id });
         
 
         return { success: true };
