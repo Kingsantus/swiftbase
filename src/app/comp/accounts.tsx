@@ -6,7 +6,7 @@ interface AccountInfoProps {
   user?: {
       name: string;
       email: string;
-  }
+  };
 }
 
 const AccountInfoComponent: React.FC<AccountInfoProps> = ({ walletAddress, balance, user }) => {

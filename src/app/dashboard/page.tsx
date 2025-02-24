@@ -42,6 +42,7 @@ export default function Dashboard() {
         { id: '2', description: 'Received from Bob', amount: 0.5, status: 'received' },
         { id: '3', description: 'Sent to Charlie', amount: 0.2, status: 'pending' },
     ];
+    
 
     const walletAddress = '0x1234...abcd';
     const balance = 1.5;
