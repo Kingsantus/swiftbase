@@ -22,7 +22,8 @@ export function lower(email: AnyPgColumn): SQL {
 
 // Define enums
 export const roleEnum = pgEnum("role", ["user", "admin"]);
-export const actionEnum = pgEnum("action", ["send", "receive", "completed", "refund"]);
+export const actionEnum = pgEnum("action", ["send", "receive"]);
+export const statusEnum = pgEnum("status", ["pending", "completed", "refund"]);
 
 // Users Table
 export const users = pgTable(
@@ -59,12 +60,18 @@ export const wallets = pgTable("wallets", {
 
 // Transactions Table (Merged Send & Receive Transactions)
 export const transactions = pgTable("transactions", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  walletId: integer("wallet_id").references(() => wallets.id, { onDelete: "cascade" }).notNull(),
-  transactionType: actionEnum("transaction_type").notNull(), // "send", "receive", or "refund"
-  transactionId: varchar("transaction_id", { length: 255 }).notNull(),
-  counterpartyWallet: varchar("counterparty_wallet", { length: 255 }).notNull(), // Sender or Receiver Wallet
+   id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  walletId: integer("wallet_id")
+    .references(() => wallets.id, { onDelete: "cascade" })
+    .notNull(),
+  transactionType: actionEnum("transaction_type").notNull(),
+  statusType: statusEnum("status_type").notNull(),
+  transactionId: varchar("transaction_id", { length: 255 }),
+  receiverWallet: varchar("receiver_wallet", { length: 255 }).notNull(),
+  transactionHash: text("transaction_hash").notNull(),
   amount: numeric("amount", { precision: 19, scale: 8 }).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
