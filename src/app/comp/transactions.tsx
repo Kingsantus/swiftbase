@@ -134,14 +134,14 @@ const TransactionComponent: React.FC = () => {
                   disabled={processingTransactions[transaction.transactionId]}
                   onClick={() => handleRelease(transaction.id, transaction.transactionId)}
                 >
-                  {processingTransactions[transaction.transactionId] ? "Processing..." : "Release"}
+                  {processingTransactions[transaction.transactionId] ? "Processing..." : "Release Fund"}
                 </button>
                 <button
                   className="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
                   disabled={processingTransactions[transaction.transactionId]}
                   onClick={() => handleRefund(transaction.id, transaction.transactionId)}
                 >
-                  {processingTransactions[transaction.transactionId] ? "Processing..." : "Refund"}
+                  {processingTransactions[transaction.transactionId] ? "Processing..." : "Refund Me"}
                 </button>
               </div>
             )}

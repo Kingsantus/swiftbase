@@ -82,6 +82,7 @@ export async function POST(req: Request) {
 
     const filePath = path.join(process.cwd(), "contracts", "abi.json");
     const  abi = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    console.log(abi);
 
     const contract = new ethers.Contract(contractAddress, abi, signer);
 

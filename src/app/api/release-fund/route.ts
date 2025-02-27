@@ -93,7 +93,7 @@ export async function POST(req: Request) {
           transactionHash: tx.hash,
           transactionId: null,
         })
-        .where(eq(transactions.id, id)) // Ensure correct transaction update
+        .where(eq(transactions.id, id))
         .returning({ id: transactions.id })
         .then((res) => res[0]);
 
