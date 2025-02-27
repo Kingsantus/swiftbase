@@ -47,7 +47,7 @@ const SendMoneyComponent = () => {
     setLoading(true);
 
     try {
-    const response = await fetch("/api/govern-fund", {
+    const response = await fetch("/api/send-protected", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address, amount }),
