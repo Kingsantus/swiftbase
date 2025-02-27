@@ -31,6 +31,7 @@ export async function GET() {
                 type: transactions.transactionType,
                 status: transactions.statusType,
                 transactionId: transactions.transactionId,
+                txHash: transactions.transactionHash,
                 date: transactions.createdAt,
             })
             .from(transactions)

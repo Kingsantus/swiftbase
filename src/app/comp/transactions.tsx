@@ -9,6 +9,7 @@ interface Transaction {
   status: string;
   transactionId: string;
   date: string;
+  txHash: string;
 }
 
 const TransactionComponent: React.FC = () => {
@@ -42,13 +43,13 @@ const TransactionComponent: React.FC = () => {
     setSelectedTransaction(transaction);
   };
 
-  const handleRelease = async (transactionId: string) => {
+  const handleRelease = async (id: string, transactionId: string)  => {
     setProcessingTransactions((prev) => ({ ...prev, [transactionId]: true }));
     try {
       const response = await fetch("/api/release-fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactionId }),
+        body: JSON.stringify({ id, transactionId }),
       });
 
       if (!response.ok) {
@@ -70,19 +71,20 @@ const TransactionComponent: React.FC = () => {
     }
   };
 
-  const handleRefund = async (transactionId: string) => {
+  const handleRefund = async (id: string, transactionId: string) => {
     setProcessingTransactions((prev) => ({ ...prev, [transactionId]: true }));
     try {
       const response = await fetch("/api/refund-fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transactionId }),
+        body: JSON.stringify({ id, transactionId }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to process transaction");
       }
-      alert("Refund successful!");
+      const data = await response.json();
+      alert(`Refunded ${data.amount} was successful!`);
 
       // Update transaction status in local state
       setTransactions((prevTransactions) =>
@@ -117,6 +119,11 @@ const TransactionComponent: React.FC = () => {
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">{transaction.status}</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
+              <a href={`https://sepolia.etherscan.io/tx/${transaction.txHash}`} target="_blank" rel="noopener noreferrer"
+              className="text-blue-500 cursor-pointer no-underline hover:underline" >
+                Check Transaction on Explorer</a>
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
               {new Date(transaction.date).toLocaleString()}
             </div>
 
@@ -125,14 +132,14 @@ const TransactionComponent: React.FC = () => {
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
                   disabled={processingTransactions[transaction.transactionId]}
-                  onClick={() => handleRelease(transaction.transactionId)}
+                  onClick={() => handleRelease(transaction.id, transaction.transactionId)}
                 >
                   {processingTransactions[transaction.transactionId] ? "Processing..." : "Release"}
                 </button>
                 <button
                   className="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
                   disabled={processingTransactions[transaction.transactionId]}
-                  onClick={() => handleRefund(transaction.transactionId)}
+                  onClick={() => handleRefund(transaction.id, transaction.transactionId)}
                 >
                   {processingTransactions[transaction.transactionId] ? "Processing..." : "Refund"}
                 </button>
