@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "Contract address not defined" }, { status: 500 });
     }
 
-    const abiBase64 = process.env.NEXT_PUBLIC_CONTRACT_ABI;
+    const abiBase64 = process.env.NEXT_CONTRACT_FUNCTION_ABI;
     if (!abiBase64) {
       return NextResponse.json({ success: false, message: "Contract ABI not defined" }, { status: 500 });
     }
