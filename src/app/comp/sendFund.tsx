@@ -7,12 +7,14 @@ const SendMoneyComponent = () => {
   const [showGovernMoney, setShowGovernMoney] = useState(false);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleDirectSend = async () => {
   if (!ethers.isAddress(address)) {
     console.error("Invalid recipient address");
     return;
   }
+  setLoading(true); 
 
   try {
     const response = await fetch("/api/send-direct", {
@@ -24,19 +26,47 @@ const SendMoneyComponent = () => {
     const data = await response.json();
 
     if (data.success) {
-      console.log("Transaction successful:", data.txHash);
-    } else {
-      console.error("Transaction failed:", data.message);
+        alert("Transaction successful!"); // Alert user
+        setAddress(""); // Reset address field
+        setAmount(""); // Reset amount field
+      } else {
+        console.error("Transaction failed:", data.message);
+      }
+    } catch (error) {
+      console.error("Error processing transaction:", error);
+    } finally {
+      setLoading(false); // Hide loading
     }
-  } catch (error) {
-    console.error("Error processing transaction:", error);
-  }
-};
+  };
 
-  const handleProtectionSend = () => {
-    // Handle the logic for governing money
-    console.log('Governing money for:', address, 'Amount:', amount);
-    // Add your logic here (e.g., API call, validation, etc.)
+  const handleProtectionSend = async () => {
+    if (!ethers.isAddress(address)) {
+      console.error("Invalid recipient address");
+      return;
+    }
+    setLoading(true);
+
+    try {
+    const response = await fetch("/api/govern-fund", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address, amount }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        alert("Transaction successful!"); // Alert user
+        setAddress(""); // Reset address field
+        setAmount(""); // Reset amount field
+      } else {
+        console.error("Transaction failed:", data.message);
+      }
+    } catch (error) {
+      console.error("Error processing transaction:", error);
+    } finally {
+      setLoading(false); // Hide loading
+    }
   };
 
   return (
@@ -83,7 +113,7 @@ const SendMoneyComponent = () => {
               onClick={handleDirectSend}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
-              Submit Direct Send
+              {loading ? "Processing..." : "Submit Direct Send"}
             </button>
           )}
           {showGovernMoney && (
@@ -91,7 +121,7 @@ const SendMoneyComponent = () => {
               onClick={handleProtectionSend}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
-              Submit Govern Money
+              {loading ? "Processing..." : "Submit Govern Money"}
             </button>
           )}
         </div>
