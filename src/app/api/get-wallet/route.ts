@@ -12,7 +12,6 @@ export async function GET() {
     try {
         // Authenticate user
         const session = await auth();
-        console.log(session)
         const useremail = session?.user?.email;
 
         if (!useremail) {
