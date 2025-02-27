@@ -6,8 +6,7 @@ import { findUserByEmail } from "@/resources/user-queries";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { decryptPrivateKey } from "@/app/utility/decryptPrivateKey";
-import path from "path";
-import fs from "fs";
+
 
 
 export async function POST(req: Request) {
@@ -80,9 +79,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "Contract address not defined" }, { status: 500 });
     }
 
-    const filePath = path.join(process.cwd(), "contracts", "abi.json");
-    const  abi = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    console.log(abi);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/abi.json`);
+    if (!res.ok) {
+      throw new Error("Failed to fetch ABI");
+    }
+    const abi = await res.json();
 
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
